@@ -1,8 +1,19 @@
-import { Divider } from "react-native-paper"
-import { ListItem } from '@rneui/themed';
+import React, { useState } from "react";
+import { Divider } from "react-native-paper";
+import { ListItem } from "@rneui/themed";
 import { Icon, Button } from "@rneui/base";
 
-const ProductItem = (props: {name: string}) => {
+const ProductItem = (props: { name: string }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  const deleteItem = () => {
+    setIsVisible(false);
+  };
+
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <>
       <ListItem.Swipeable
@@ -16,7 +27,10 @@ const ProductItem = (props: {name: string}) => {
         )}
         rightContent={(reset) => (
           <Button
-            onPress={() => reset()}
+            onPress={() => {
+              deleteItem();
+              reset();
+            }}
             icon={{ name: 'check', color: 'white' }}
             buttonStyle={{ minHeight: '100%', backgroundColor: 'green' }}
           />
@@ -30,7 +44,7 @@ const ProductItem = (props: {name: string}) => {
       </ListItem.Swipeable>
       <Divider />
     </>
-  )
-}
+  );
+};
 
-export default ProductItem
+export default ProductItem;
