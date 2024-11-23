@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Divider } from "react-native-paper";
 import { ListItem } from "@rneui/themed";
 import { Icon, Button } from "@rneui/base";
-import { ChangeStylesOnThemeChange } from "./ThemeChanger";
-import { showToast } from "./App";
+import { ChangeStylesOnThemeChange } from "../ThemeChanger";
+import { showToast } from "../../App";
 
 const ProductItem = (props: { name: string }) => {
   const [isVisible, setIsVisible] = useState(true);
