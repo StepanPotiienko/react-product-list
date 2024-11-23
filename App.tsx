@@ -1,75 +1,25 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
-import { Appbar } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ProductItem from './ProductItem';
+import { View, Text } from 'react-native';
 import { Input } from '@rneui/base';
-import { ChangeStylesOnThemeChange } from './ThemeChanger';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
-const AppTitle: string = "Product List";
-const themeStyles = ChangeStylesOnThemeChange();
+import { AppBar } from './src/components/AppBar'
+import ProductItem from './src/components/ProductItem';
 
-export const showToast = (type: string = 'success', title: string, description: string) => {
-  Toast.show({ type: type, text1: title, text2: description, position: "bottom", swipeable: true });
-};
-
-const AppBar = () => {
-  return (
-    <Appbar.Header style={{ backgroundColor: themeStyles.backgroundColor }}>
-      <Appbar.Content
-        title={AppTitle}
-        titleStyle={{ color: themeStyles.color }}
-      />
-      <Appbar.Action
-        icon="dots-vertical"
-        onPress={() =>
-          showToast("error", "Opened settings", "Not yet implemented D:")
-        }
-      />
-    </Appbar.Header>
-  );
-};
-
-const App = () => {
-  const [itemsList, setItemsList] = useState<string[]>([]);
-
-  const appendItem = (name: string) => {
-    setItemsList([...itemsList, name]);
-    showToast("success", "Item added", name);
-  };
-
-  return (
-    <SafeAreaProvider>
-      <View style={styles.container}>
-        <View>
-          <AppBar />
-        </View>
-        <AddItem onAddItem={appendItem} />
-
-        {itemsList.length === 0 ? (
-          <Text style={{ textAlign: 'center', fontSize: 12 }}>There is nothing to see here yet. Begin by adding a new product above!</Text>
-        ) : (
-          itemsList.map((name) => <ProductItem key={name} name={name} />)
-        )}
-
-        <StatusBar style="auto" />
-      </View>
-      <Toast />
-    </SafeAreaProvider>
-  );
-};
+import { SaveData, LoadData } from './src/Data';
+import { showToast } from './src/Toast';
 
 const AddItem = ({ onAddItem }: { onAddItem: (name: string) => void }) => {
   const [name, setName] = useState("");
 
-  const handleAddItem = () => {
+  const ValidateItemInput = () => {
     if (name.trim()) {
       onAddItem(name);
       setName("");
     } else {
-      showToast("error", "Error", "Item name cannot be empty.");
+      showToast("error", "Error", "Item name cannot be empty.", "bottom");
     }
   };
 
@@ -78,15 +28,38 @@ const AddItem = ({ onAddItem }: { onAddItem: (name: string) => void }) => {
       value={name}
       placeholder="Buy eggs"
       onChangeText={setName}
-      onSubmitEditing={handleAddItem}
+      onSubmitEditing={ValidateItemInput}
     />
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Ensures the container takes the full screen height
-  },
-});
+const App = () => {
+  // TODO: Implement saving and loading data from AsyncStorage.
+  const [itemsList, setItemsList] = useState<string[]>([])
+
+  const appendItem = (name: string) => {
+    setItemsList([...itemsList, name])
+    showToast("success", "Item added", name, "bottom")
+    SaveData(name, "waiting")
+  };
+
+  return (
+    <SafeAreaProvider>
+      <View style={{flex: 1}}>
+        <AppBar />
+        <AddItem onAddItem={appendItem} />
+        {itemsList.length === 0 ? (
+          <Text style={{ textAlign: 'center', fontSize: 12 }}>
+            There is nothing to see here yet. Begin by adding a new product above!
+          </Text>
+        ) : (
+          itemsList.map((name) => <ProductItem key={name} name={name} />)
+        )}
+        <StatusBar style="auto" />
+      </View>
+      <Toast />
+    </SafeAreaProvider>
+  );
+};
 
 export default App;
