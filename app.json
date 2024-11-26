@@ -12,7 +12,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIntentifier": "com.stepanpotiienko.product-list",
+      "buildNumber": "1.0.0",
+      "bundleIdentifier": "com.stepanpotiienko.productlist"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "51011e5d-2f6f-470c-a7c7-b87f0759c166"
+      }
     }
   }
 }

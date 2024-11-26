@@ -16,10 +16,16 @@ export async function LoadData(key: string) {
   }
 }
 
-export function LoadAllData() {
+export async function LoadAllData(): Promise<string[]> {
+  let data: string[] = [];
   try {
-    throw new Error("Not yet implemented.");
+    const keys = await AsyncStorage.getAllKeys();
+    const keyValuePairs = await AsyncStorage.multiGet(keys);
+
+    data = keyValuePairs.map(([key, value]) => value ?? "");
   } catch (error) {
     console.log("Could not load the data. Error:", error);
   }
+
+  return data;
 }
