@@ -1,34 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Divider } from "react-native-paper";
 import { ListItem } from "@rneui/themed";
 import { Icon, Button } from "@rneui/base";
 import { ChangeStylesOnThemeChange } from "../ThemeChanger";
-import { showToast } from "../../App";
+import { showToast } from "../Toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ProductItem = (props: { name: string }) => {
+const ProductItem = (props: { name: string; state: string }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
 
-  const styles = ChangeStylesOnThemeChange()
+  useEffect(() => {
+    if (props.state === "waiting") {
+      CheckItem(false);
+    } else {
+      CheckItem(true);
+    }
+  }, [props.state]);
+
+  const styles = ChangeStylesOnThemeChange();
 
   const DeleteItem = (name: string) => {
     setIsVisible(false);
-    showToast("error", "Deleted Item", name)
+    AsyncStorage.removeItem(name);
+    showToast("error", "Deleted Item", name, "bottom");
+  };
+
+  const CheckItem = async (value: boolean) => {
+    setIsChecked(value);
+
+    const itemData = { name: props.name, state: value ? "checked" : "waiting" };
+
+    try {
+      await AsyncStorage.setItem(props.name, JSON.stringify(itemData));
+      showToast("success", value ? "Item Checked" : "Item Unchecked", props.name, "bottom");
+    } catch (error) {
+      console.error("Error saving to AsyncStorage", error);
+    }
   };
 
   if (!isVisible) {
-    return <></>;
+    return null;
   }
-
-  const CheckItem = (value: boolean) => {
-    setIsChecked(value);
-  };
 
   return (
     <>
       <ListItem.Swipeable
         disabled={isChecked}
-        containerStyle={{ backgroundColor: styles.backgroundColor  }}
+        containerStyle={{ backgroundColor: styles.backgroundColor }}
         leftContent={(reset) => (
           <Button
             title="Delete"
